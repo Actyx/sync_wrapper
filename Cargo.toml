@@ -14,3 +14,7 @@ categories = ["concurrency"]
 
 [dev-dependencies]
 pin-project-lite = "0.2.7"
+futures = { version = "0.3" }
+
+[dependencies]
+futures-core = { version = "0.3" }
