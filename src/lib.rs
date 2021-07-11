@@ -19,6 +19,8 @@
 #![doc(html_logo_url = "https://developer.actyx.com/img/logo.svg")]
 #![doc(html_favicon_url = "https://developer.actyx.com/img/favicon.ico")]
 
+pub mod ext;
+
 /// A mutual exclusion primitive that relies on static type information only
 ///
 /// In some cases synchronization can be proven statically: whenever you hold an exclusive `&mut`

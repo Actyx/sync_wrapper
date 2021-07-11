@@ -10,3 +10,6 @@ homepage = "https://docs.rs/sync_wrapper"
 license = "Apache-2.0"
 keywords = ["concurrency"]
 categories = ["concurrency"]
+
+[dependencies]
+futures-core = { version = "0.3" }
