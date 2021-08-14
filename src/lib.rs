@@ -132,3 +132,9 @@ impl<T> Debug for SyncWrapper<T> {
         f.pad("SyncWrapper")
     }
 }
+
+impl<T: Default> Default for SyncWrapper<T> {
+    fn default() -> Self {
+        Self::new(T::default())
+    }
+}
