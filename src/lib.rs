@@ -18,8 +18,12 @@
 //! This library is inspired by [this discussion](https://internals.rust-lang.org/t/what-shall-sync-mean-across-an-await/12020/2).
 #![doc(html_logo_url = "https://developer.actyx.com/img/logo.svg")]
 #![doc(html_favicon_url = "https://developer.actyx.com/img/favicon.ico")]
+#![no_std]
 
-use core::pin::Pin;
+use core::{
+    fmt::{self, Debug, Formatter},
+    pin::Pin,
+};
 
 /// A mutual exclusion primitive that relies on static type information only
 ///
@@ -72,7 +76,7 @@ impl<T> SyncWrapper<T> {
     ///
     /// let mutex = SyncWrapper::new(42);
     /// ```
-    pub fn new(value: T) -> Self {
+    pub const fn new(value: T) -> Self {
         Self(value)
     }
 
@@ -159,3 +163,21 @@ impl<T> SyncWrapper<T> {
 // this is safe because the only operations permitted on this data structure require exclusive
 // access or ownership
 unsafe impl<T> Sync for SyncWrapper<T> {}
+
+impl<T> Debug for SyncWrapper<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.pad("SyncWrapper")
+    }
+}
+
+impl<T: Default> Default for SyncWrapper<T> {
+    fn default() -> Self {
+        Self::new(T::default())
+    }
+}
+
+impl<T> From<T> for SyncWrapper<T> {
+    fn from(value: T) -> Self {
+        Self::new(value)
+    }
+}

@@ -5,6 +5,7 @@ authors = ["Actyx AG <developer@actyx.io>"]
 edition = "2018"
 description = "A tool for enlisting the compiler’s help in proving the absence of concurrency"
 readme = "README.md"
+repository = "https://github.com/Actyx/sync_wrapper"
 documentation = "https://docs.rs/sync_wrapper"
 homepage = "https://docs.rs/sync_wrapper"
 license = "Apache-2.0"
