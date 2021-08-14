@@ -138,3 +138,9 @@ impl<T: Default> Default for SyncWrapper<T> {
         Self::new(T::default())
     }
 }
+
+impl<T> From<T> for SyncWrapper<T> {
+    fn from(value: T) -> Self {
+        Self::new(value)
+    }
+}
