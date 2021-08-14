@@ -18,6 +18,7 @@
 //! This library is inspired by [this discussion](https://internals.rust-lang.org/t/what-shall-sync-mean-across-an-await/12020/2).
 #![doc(html_logo_url = "https://developer.actyx.com/img/logo.svg")]
 #![doc(html_favicon_url = "https://developer.actyx.com/img/favicon.ico")]
+#![no_std]
 
 /// A mutual exclusion primitive that relies on static type information only
 ///
