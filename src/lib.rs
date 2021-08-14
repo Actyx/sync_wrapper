@@ -70,7 +70,7 @@ impl<T> SyncWrapper<T> {
     ///
     /// let mutex = SyncWrapper::new(42);
     /// ```
-    pub fn new(value: T) -> Self {
+    pub const fn new(value: T) -> Self {
         Self(value)
     }
 
