@@ -19,6 +19,8 @@
 #![doc(html_logo_url = "https://developer.actyx.com/img/logo.svg")]
 #![doc(html_favicon_url = "https://developer.actyx.com/img/favicon.ico")]
 
+use core::pin::Pin;
+
 /// A mutual exclusion primitive that relies on static type information only
 ///
 /// In some cases synchronization can be proven statically: whenever you hold an exclusive `&mut`
@@ -96,6 +98,39 @@ impl<T> SyncWrapper<T> {
     /// ```
     pub fn get_mut(&mut self) -> &mut T {
         &mut self.0
+    }
+
+    /// Acquires a pinned reference to the protected value.
+    ///
+    /// See [`Self::get_mut`] for why this method is safe.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use std::future::Future;
+    /// use std::pin::Pin;
+    /// use std::task::{Context, Poll};
+    ///
+    /// use pin_project_lite::pin_project;
+    /// use sync_wrapper::SyncWrapper;
+    ///
+    /// pin_project! {
+    ///     struct FutureWrapper<F> {
+    ///         #[pin]
+    ///         inner: SyncWrapper<F>,
+    ///     }
+    /// }
+    ///
+    /// impl<F: Future> Future for FutureWrapper<F> {
+    ///     type Output = F::Output;
+    ///
+    ///     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+    ///         self.project().inner.get_pin_mut().poll(cx)
+    ///     }
+    /// }
+    /// ```
+    pub fn get_pin_mut(self: Pin<&mut Self>) -> Pin<&mut T> {
+        unsafe { Pin::map_unchecked_mut(self, |this| &mut this.0) }
     }
 
     /// Consumes this mutex, returning the underlying data.

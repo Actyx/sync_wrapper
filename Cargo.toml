@@ -10,3 +10,6 @@ homepage = "https://docs.rs/sync_wrapper"
 license = "Apache-2.0"
 keywords = ["concurrency"]
 categories = ["concurrency"]
+
+[dev-dependencies]
+pin-project-lite = "0.2.7"
