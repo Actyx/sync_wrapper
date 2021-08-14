@@ -20,6 +20,8 @@
 #![doc(html_favicon_url = "https://developer.actyx.com/img/favicon.ico")]
 #![no_std]
 
+use core::fmt::{self, Debug, Formatter};
+
 /// A mutual exclusion primitive that relies on static type information only
 ///
 /// In some cases synchronization can be proven statically: whenever you hold an exclusive `&mut`
@@ -125,3 +127,21 @@ impl<T> SyncWrapper<T> {
 // this is safe because the only operations permitted on this data structure require exclusive
 // access or ownership
 unsafe impl<T> Sync for SyncWrapper<T> {}
+
+impl<T> Debug for SyncWrapper<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.pad("SyncWrapper")
+    }
+}
+
+impl<T: Default> Default for SyncWrapper<T> {
+    fn default() -> Self {
+        Self::new(T::default())
+    }
+}
+
+impl<T> From<T> for SyncWrapper<T> {
+    fn from(value: T) -> Self {
+        Self::new(value)
+    }
+}
