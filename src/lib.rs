@@ -184,26 +184,25 @@ impl<T> From<T> for SyncWrapper<T> {
     }
 }
 
-
+/// `Future` which is `Sync`.
+///
+/// # Examples
+///
+/// ```
+/// use sync_wrapper::{SyncWrapper, SyncFuture};
+///
+/// let fut = async { 1 };
+/// let fut = SyncFuture::new(fut);
+/// ```
 pub struct SyncFuture<F> {
     inner: SyncWrapper<F>
 }
 impl <F: Future> SyncFuture<F> {
-    /// Create a `Future` which is `Sync`.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use sync_wrapper::{SyncWrapper, SyncFuture};
-    ///
-    /// let fut = async { 1 };
-    /// let fut = SyncFuture::new(fut);
-    /// ```
     pub fn new(inner: F) -> Self {
         Self { inner: SyncWrapper::new(inner) }
     }
-    pub fn into_inner(self) -> SyncWrapper<F> {
-        self.inner
+    pub fn into_inner(self) -> F {
+        self.inner.into_inner()
     }
 }
 impl <F: Future> Future for SyncFuture<F> {
@@ -214,26 +213,26 @@ impl <F: Future> Future for SyncFuture<F> {
     }
 }
 
+/// `Stream` which is `Sync`.
+///
+/// # Examples
+///
+/// ```
+/// use sync_wrapper::SyncStream;
+/// use futures::stream;
+///
+/// let st = stream::iter(vec![1]);
+/// let st = SyncStream::new(st);
+/// ```
 pub struct SyncStream<S> {
     inner: SyncWrapper<S>
 }
 impl <S: futures_core::Stream> SyncStream<S> {
-    /// Create a `Stream` which is `Sync`.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use sync_wrapper::SyncStream;
-    /// use futures::stream;
-    ///
-    /// let st = stream::iter(vec![1]);
-    /// let st = SyncStream::new(st);
-    /// ```
     pub fn new(inner: S) -> Self {
         Self { inner: SyncWrapper::new(inner) }
     }
-    pub fn into_inner(self) -> SyncWrapper<S> {
-        self.inner
+    pub fn into_inner(self) -> S {
+        self.inner.into_inner()
     }
 }
 impl <S: futures_core::Stream> futures_core::Stream for SyncStream<S> {
