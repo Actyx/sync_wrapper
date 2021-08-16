@@ -23,6 +23,8 @@
 use core::{
     fmt::{self, Debug, Formatter},
     pin::Pin,
+    future::Future,
+    task::{Context, Poll},
 };
 
 /// A mutual exclusion primitive that relies on static type information only
@@ -179,5 +181,64 @@ impl<T: Default> Default for SyncWrapper<T> {
 impl<T> From<T> for SyncWrapper<T> {
     fn from(value: T) -> Self {
         Self::new(value)
+    }
+}
+
+/// `Future` which is `Sync`.
+///
+/// # Examples
+///
+/// ```
+/// use sync_wrapper::{SyncWrapper, SyncFuture};
+///
+/// let fut = async { 1 };
+/// let fut = SyncFuture::new(fut);
+/// ```
+pub struct SyncFuture<F> {
+    inner: SyncWrapper<F>
+}
+impl <F: Future> SyncFuture<F> {
+    pub fn new(inner: F) -> Self {
+        Self { inner: SyncWrapper::new(inner) }
+    }
+    pub fn into_inner(self) -> F {
+        self.inner.into_inner()
+    }
+}
+impl <F: Future> Future for SyncFuture<F> {
+    type Output = F::Output;
+    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        let inner = unsafe { self.map_unchecked_mut(|x| x.inner.get_mut()) };
+        inner.poll(cx)
+    }
+}
+
+/// `Stream` which is `Sync`.
+///
+/// # Examples
+///
+/// ```
+/// use sync_wrapper::SyncStream;
+/// use futures::stream;
+///
+/// let st = stream::iter(vec![1]);
+/// let st = SyncStream::new(st);
+/// ```
+pub struct SyncStream<S> {
+    inner: SyncWrapper<S>
+}
+impl <S: futures_core::Stream> SyncStream<S> {
+    pub fn new(inner: S) -> Self {
+        Self { inner: SyncWrapper::new(inner) }
+    }
+    pub fn into_inner(self) -> S {
+        self.inner.into_inner()
+    }
+}
+impl <S: futures_core::Stream> futures_core::Stream for SyncStream<S> {
+    type Item = S::Item;
+    fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
+        let inner = unsafe { self.map_unchecked_mut(|x| x.inner.get_mut()) };
+        inner.poll_next(cx)
     }
 }
