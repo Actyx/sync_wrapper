@@ -164,7 +164,7 @@ impl<T> SyncWrapper<T> {
 
 // this is safe because the only operations permitted on this data structure require exclusive
 // access or ownership
-unsafe impl<T> Sync for SyncWrapper<T> {}
+unsafe impl<T: Send> Sync for SyncWrapper<T> {}
 
 impl<T> Debug for SyncWrapper<T> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
