@@ -224,9 +224,11 @@ impl <F: Future> Future for SyncFuture<F> {
 /// let st = stream::iter(vec![1]);
 /// let st = SyncStream::new(st);
 /// ```
+#[cfg(feature = "futures")]
 pub struct SyncStream<S> {
     inner: SyncWrapper<S>
 }
+#[cfg(feature = "futures")]
 impl <S: futures_core::Stream> SyncStream<S> {
     pub fn new(inner: S) -> Self {
         Self { inner: SyncWrapper::new(inner) }
@@ -235,6 +237,7 @@ impl <S: futures_core::Stream> SyncStream<S> {
         self.inner.into_inner()
     }
 }
+#[cfg(feature = "futures")]
 impl <S: futures_core::Stream> futures_core::Stream for SyncStream<S> {
     type Item = S::Item;
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
@@ -242,3 +245,4 @@ impl <S: futures_core::Stream> futures_core::Stream for SyncStream<S> {
         inner.poll_next(cx)
     }
 }
+
