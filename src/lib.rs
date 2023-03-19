@@ -178,6 +178,13 @@ impl<T: Default> Default for SyncWrapper<T> {
     }
 }
 
+impl<T: Clone> Clone for SyncWrapper<T> {
+    fn clone(&self) -> Self {
+        Self::new(T::clone(&self.0))
+    }
+}
+
+
 impl<T> From<T> for SyncWrapper<T> {
     fn from(value: T) -> Self {
         Self::new(value)
