@@ -22,8 +22,8 @@
 
 use core::{
     fmt::{self, Debug, Formatter},
-    pin::Pin,
     future::Future,
+    pin::Pin,
     task::{Context, Poll},
 };
 
@@ -80,6 +80,11 @@ impl<T> SyncWrapper<T> {
     /// ```
     pub const fn new(value: T) -> Self {
         Self(value)
+    }
+
+    /// Gets a reference to the underlying data.
+    pub fn get_ref(&self) -> &T {
+        &self.0
     }
 
     /// Acquires a reference to the protected value.
@@ -195,17 +200,19 @@ impl<T> From<T> for SyncWrapper<T> {
 /// let fut = SyncFuture::new(fut);
 /// ```
 pub struct SyncFuture<F> {
-    inner: SyncWrapper<F>
+    inner: SyncWrapper<F>,
 }
-impl <F: Future> SyncFuture<F> {
+impl<F: Future> SyncFuture<F> {
     pub fn new(inner: F) -> Self {
-        Self { inner: SyncWrapper::new(inner) }
+        Self {
+            inner: SyncWrapper::new(inner),
+        }
     }
     pub fn into_inner(self) -> F {
         self.inner.into_inner()
     }
 }
-impl <F: Future> Future for SyncFuture<F> {
+impl<F: Future> Future for SyncFuture<F> {
     type Output = F::Output;
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
         let inner = unsafe { self.map_unchecked_mut(|x| x.inner.get_mut()) };
@@ -226,23 +233,24 @@ impl <F: Future> Future for SyncFuture<F> {
 /// ```
 #[cfg(feature = "futures")]
 pub struct SyncStream<S> {
-    inner: SyncWrapper<S>
+    inner: SyncWrapper<S>,
 }
 #[cfg(feature = "futures")]
-impl <S: futures_core::Stream> SyncStream<S> {
+impl<S: futures_core::Stream> SyncStream<S> {
     pub fn new(inner: S) -> Self {
-        Self { inner: SyncWrapper::new(inner) }
+        Self {
+            inner: SyncWrapper::new(inner),
+        }
     }
     pub fn into_inner(self) -> S {
         self.inner.into_inner()
     }
 }
 #[cfg(feature = "futures")]
-impl <S: futures_core::Stream> futures_core::Stream for SyncStream<S> {
+impl<S: futures_core::Stream> futures_core::Stream for SyncStream<S> {
     type Item = S::Item;
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
         let inner = unsafe { self.map_unchecked_mut(|x| x.inner.get_mut()) };
         inner.poll_next(cx)
     }
 }
-
