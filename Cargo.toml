@@ -1,6 +1,6 @@
 [package]
 name = "sync_wrapper"
-version = "0.1.2"
+version = "1.0.0"
 authors = ["Actyx AG <developer@actyx.io>"]
 edition = "2018"
 description = "A tool for enlisting the compiler's help in proving the absence of concurrency"
