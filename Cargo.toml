@@ -21,3 +21,7 @@ futures = { version = "0.3" }
 
 [dependencies]
 futures-core = { version = "0.3", default-features = false, optional = true }
+
+[package.metadata.docs.rs]
+features = ["futures"]
+
