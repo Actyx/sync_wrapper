@@ -2,7 +2,7 @@
 name = "sync_wrapper"
 version = "1.0.1"
 authors = ["Actyx AG <developer@actyx.io>"]
-edition = "2018"
+edition = "2021"
 description = "A tool for enlisting the compiler's help in proving the absence of concurrency"
 readme = "README.md"
 repository = "https://github.com/Actyx/sync_wrapper"
@@ -23,5 +23,5 @@ futures = { version = "0.3" }
 futures-core = { version = "0.3", default-features = false, optional = true }
 
 [package.metadata.docs.rs]
-features = ["futures"]
+all-features = true
 
